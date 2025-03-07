@@ -1,16 +1,18 @@
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
-import { addFeed } from "../utils/feedSlice";
-import { useEffect } from "react";
+import { addFeed, removeUserFromFeed } from "../utils/feedSlice";
+import { useEffect, useState } from "react";
 import UserCard from "./UserCard";
 
 const Feed = () => {
   const feed = useSelector((store) => store.feed) || [];
   const dispatch = useDispatch();
+  const [currentIndex, setCurrentIndex] = useState(0); // Track which profile is displayed
 
+  // Fetch feed data only once
   const getFeed = async () => {
-    if (feed.length > 0) return; 
+    if (feed.length > 0) return;
 
     try {
       const res = await axios.get(`${BASE_URL}/feed`, { withCredentials: true });
@@ -26,15 +28,21 @@ const Feed = () => {
 
   useEffect(() => {
     getFeed();
-  }, [feed]);
+  }, []);
 
-  if (feed.length === 0) return <h1 className="flex justify-center my-10">No new users found!</h1>;
+  // Move to next profile when a button is clicked
+  const handleNextProfile = (userId) => {
+    dispatch(removeUserFromFeed(userId)); // Remove user from Redux store
+    setCurrentIndex((prevIndex) => prevIndex + 1); // Show next profile
+  };
+
+  if (!feed || feed.length === 0 || currentIndex >= feed.length) {
+    return <h1 className="flex justify-center my-10 text-lg">No more users!</h1>;
+  }
 
   return (
-    <div className="flex flex-wrap gap-4 justify-center my-10">
-      {feed.map((user) => (
-        <UserCard key={user._id} user={user} />
-      ))}
+    <div className="flex justify-center my-10">
+      <UserCard user={feed[currentIndex]} onNext={handleNextProfile} />
     </div>
   );
 };

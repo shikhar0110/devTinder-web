@@ -4,16 +4,14 @@ import { useDispatch } from "react-redux";
 import { removeUserFromFeed } from "../utils/feedSlice";
 
 const UserCard = ({ user }) => {
-  if (!user) {
-    return null; 
-  }
+  if (!user) return null;
 
   const { _id, firstName, lastName, photoURL, age, gender, about } = user;
   const dispatch = useDispatch();
 
   const handleSendRequest = async (status, userId) => {
     try {
-      const res = await axios.post(
+      await axios.post(
         `${BASE_URL}/request/send/${status}/${userId}`,
         {},
         { withCredentials: true }
@@ -25,19 +23,26 @@ const UserCard = ({ user }) => {
   };
 
   return (
-    <div className="card bg-base-300 w-96 shadow-xl">
-      <figure>
-        <img src={photoURL || "/default-profile.png"} alt="User" />
+    <div className="card w-80 h-[500px] bg-base-100 shadow-xl rounded-xl overflow-hidden">
+      {/* Full-Height Image */}
+      <figure className="w-full h-3/5">
+        <img src={photoURL} alt={firstName} className="w-full h-full object-cover" />
       </figure>
-      <div className="card-body">
-        <h2 className="card-title">{firstName ? `${firstName} ${lastName}` : "Unknown User"}</h2>
-        {age && gender ? <p>{age}, {gender}</p> : <p>Age & gender not available</p>}
-        <p>{about || "No information available"}</p>
-        <div className="card-actions justify-center my-4">
-          <button className="btn btn-primary" onClick={() => handleSendRequest("ignored", _id)}>
+
+      {/* Card Body */}
+      <div className="card-body flex flex-col justify-between p-4">
+        <div>
+          <h2 className="card-title text-lg font-bold">{firstName || "Unknown User"}</h2>
+          <p className="text-sm text-gray-500">{age && gender ? `${age}, ${gender}` : "Age & gender not available"}</p>
+          <p className="text-sm">{about || "No information available"}</p>
+        </div>
+
+        {/* Buttons */}
+        <div className="card-actions flex justify-between mt-3">
+          <button className="btn btn-outline btn-error flex-1" onClick={() => handleSendRequest("ignored", _id)}>
             Ignore
           </button>
-          <button className="btn btn-secondary" onClick={() => handleSendRequest("interested", _id)}>
+          <button className="btn btn-primary flex-1" onClick={() => handleSendRequest("interested", _id)}>
             Interested
           </button>
         </div>

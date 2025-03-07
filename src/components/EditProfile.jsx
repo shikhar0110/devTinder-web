@@ -34,19 +34,39 @@ const EditProfile = ({ user }) => {
       );
 
       console.log("API Response:", res.data);
-
       
       dispatch(addUser(res?.data?.data));
 
       setShowToast(true);
+      
+      // Show toast message briefly before reload
       setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
+        // Reload the page after successful save
+        window.location.reload();
+      }, 1000);
+      
     } catch (err) {
       console.error("Error updating profile:", err);
       setError(err.response?.data || "Error updating profile");
     }
   };
+
+  // Create a modified version of the user card for preview
+  const PreviewCard = () => (
+    <div className="card bg-base-300 w-96 shadow-xl">
+      <figure>
+        <img src={photoURL || "/default-profile.png"} alt="User" />
+      </figure>
+      <div className="card-body">
+        <h2 className="card-title">{firstName ? `${firstName} ${lastName}` : "Unknown User"}</h2>
+        {age && gender ? <p>{age}, {gender}</p> : <p>Age & gender not available</p>}
+        <p>{about || "No information available"}</p>
+        <div className="card-actions justify-center my-4">
+          <p className="text-center text-sm opacity-70">Profile Preview</p>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -141,7 +161,8 @@ const EditProfile = ({ user }) => {
           </div>
         </div>
 
-        <UserCard user={{ firstName, lastName, photoURL, age, gender, about }} />
+        {/* Use a custom preview card instead of UserCard */}
+        <PreviewCard />
       </div>
 
       {showToast && (
