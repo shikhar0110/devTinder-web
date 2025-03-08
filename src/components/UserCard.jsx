@@ -34,7 +34,7 @@ const UserCard = ({ user }) => {
         <div>
           <h2 className="card-title text-lg font-bold">{firstName || "Unknown User"}</h2>
           <p className="text-sm text-gray-500">{age && gender ? `${age}, ${gender}` : "Age & gender not available"}</p>
-          <p className="text-sm">{about || "No information available"}</p>
+{/* <p className="text-sm">{about || "No information available"}</p> */}
         </div>
 
         {/* Buttons */}
